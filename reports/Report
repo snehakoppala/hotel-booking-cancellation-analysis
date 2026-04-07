@@ -1,0 +1,176 @@
+HOTEL BOOKING CANCELLATION ANALYSIS AND PREDICTIVE MODELING REPORT
+
+1. Introduction
+This report presents a comprehensive analysis of historical hotel booking data from a global hotel chain. The primary goal is to minimize revenue leakage by identifying key drivers of Average Daily Rate (ADR) and building a robust predictive model for booking cancellation risk.
+Objectives
+•	Hypothesis Testing: Validate differences in ADR across hotel types and assess the association between deposit requirements and cancellation risk.
+•	Exploratory Data Analysis (EDA): Identify key booking and customer characteristics (e.g., lead time, customer type) associated with cancellations.
+•	Predictive Modeling: Develop a Logistic Regression Model to forecast the probability of a booking being canceled, enabling proactive interventions.
+
+2. Dataset Overview
+The dataset includes over 113,000 clean hotel bookings after preprocessing.
+Key Variables
+Variable	Description	Type
+is_canceled	Booking canceled (Yes/No)	Factor (Response)
+adr	Average Daily Rate (revenue per night)	Numeric
+lead_time	Days between booking date and arrival date	Numeric
+deposit_type	Type of deposit (No Deposit, Non Refund, Refundable)	Factor
+hotel	Hotel category (City or Resort)	Factor
+total_of_special_requests	Customer engagement metric	Numeric
+
+
+Data Cleaning and Metrics
+•	Missing values for children were imputed as 0.
+•	Bookings with ADR ≤ 0 or extreme outliers were removed to ensure statistical integrity.
+•	Overall cancellation mix: ~37.5% canceled vs. ~62.5% fulfilled.
+3. Exploratory Data Analysis (EDA)
+3.1 Lead Time Distribution
+•	Canceled bookings have a significantly longer planning horizon than fulfilled bookings.
+•	Median Lead Times:
+o	Canceled: ~115 days
+o	Not Canceled: ~47 days
+•	Interpretation: Bookings made far in advance are more likely to cancel, suggesting early-bookers have flexible plans or face schedule/price changes.
+
+
+3.2 ADR Distribution Across Hotel Types
+•	City Hotels: Higher median ADR (~€105) and greater price variability
+•	Resort Hotels: More stable ADR (~€86) distribution
+
+
+3.3 Total Stay Distribution 
+•	Mean total stay:
+o	Canceled: 3.45 nights
+o	Not Canceled: 3.42 nights
+o	Total stay duration is almost identical for canceled vs. non-canceled bookings
+o	The distributions overlap almost perfectly, indicating no meaningful relationship between stay length and cancellation behavior.
+o	Interpretation
+o	Guests do not appear to cancel more or less based on how long they intended to stay.
+o	This suggests that stay length reflects trip type, not commitment level.
+•	Interpretation: Stay length is not a significant predictor of cancellations; it reflects trip type rather than commitment
+
+
+3.4 Customer Type vs Cancellation
+•	Cancellation rates:
+o	Transient: ~41%
+o	Contract: ~26%
+o	Group: ~7%
+•	Interpretation: Transient guests are the most volatile; group bookings show the lowest cancellation risk.
+
+
+3.5 Deposit Type vs Cancellation
+•	Cancellation rates:
+o	No Deposit: ~28%
+o	Refundable: ~21%
+o	Non Refund: ~99%
+•	Chi-Square Test: χ² = 27,335, p < 2.2e-16 → extremely strong association
+•	Interpretation: Deposit policies strongly influence guest behavior; Non Refund category shows unusual skew, likely due to data reporting rules.
+
+
+3.6 Hotel Type vs Cancellation
+•	Cancellation rates:
+o	City Hotels: ~42%
+o	Resort Hotels: ~27%
+•	Interpretation: City hotels attract short-notice business travelers → higher cancellations.
+•	Operational Implication: Different overbooking strategies may be needed for city vs. resort properties.
+
+
+4. Hypothesis Testing
+4.1 Difference in Mean ADR by Hotel Type
+•	Null Hypothesis (H₀): Mean ADR is the same for City and Resort hotels
+•	Descriptive Statistics:
+o	City Hotels: Mean ADR ≈ 105.41, SD ≈ 33.30
+o	Resort Hotels: Mean ADR ≈ 86.43, SD ≈ 46.50
+•	ANOVA Result: F ≈ 5756, p < 2e-16 → reject H₀
+•	Interpretation: City Hotels charge ~€19 more on average
+•	Robustness Check: Levene’s test indicates unequal variances; Welch’s t-test confirms significance
+
+ 
+4.2 Association Between Cancellation and Deposit Type
+•	Null Hypothesis (H₀): Deposit type and cancellation status are independent
+•	Result: Chi-square statistic ≈ 27,335, p < 2.2e-16 → reject H₀
+•	Interpretation: Deposit rules significantly impact cancellations; Non Refund deposits behave unusually
+
+
+5. Predictive Modeling: Logistic Regression
+5.1 Model Summary
+•	Dependent Variable: is_canceled (Yes/No)
+•	Key Predictors: Lead Time, ADR, Deposit Type, Hotel Type, Customer Type, Total Special Requests
+•	Model Fit: Null deviance = 105,194; Residual deviance = 71,954; AIC = 72,012
+•	Multicollinearity: VIF < 3 for all variables
+
+Model Logic:
+•	Early-bookers and high-price bookings more fragile
+•	Loyal guests & engaged guests rarely cancel
+•	Non-Refund coded bookings behave uniquely
+•	Transient guests most volatile segment
+
+
+5.2 Key Predictors and Interpretation (Odds Ratios)
+Predictor	Odds Ratio	Interpretation
+deposit_typeNon Refund	285	Dominant driver; extremely high risk of cancellation
+total_of_special_requests	0.49	Protective; each request halves odds of cancellation
+hotelResort	0.82	Protective; 18% lower odds than City Hotels
+lead_time	1.004	Risk; longer lead time slightly increases odds
+customer_typeTransient	2.16	Risk; transient guests have higher cancellation likelihood
+
+
+6. Model Performance and Evaluation
+6.1 ROC and AUC
+•	Training AUC: 0.831
+•	Test AUC: 0.834
+•	Interpretation: Strong model discrimination; robust generalization
+
+
+6.2 Classification Metrics (Cutoff = 0.5)
+Metric	Test Set Result	Interpretation
+Accuracy	~80%	Overall correct classification
+Precision	~87%	When predicting cancellation, correct 87% of time
+Sensitivity (Recall)	~56%	Proportion of actual cancellations identified
+Specificity	~95%	Proportion of actual non-cancellations correctly identified
+Balanced Accuracy	~0.75–0.76	Unbiased performance metric
+
+Model Insight: Conservative classifier prioritizes precision and specificity, minimizing false alarms.
+
+7. Key Business Insights
+Finding	Implication
+City Hotels have higher ADR and higher cancellation risk (~42%)	City Hotels serve more business and short-notice travelers; higher pricing requires tighter risk management and dynamic pricing adjustments.
+Customer Engagement (Special Requests)	Bookings with more special requests are significantly less likely to cancel (Odds Ratio ~0.49). Engagement signals commitment—hotels can proactively reach out to these guests for upselling or loyalty programs.
+Lead Time is the strongest continuous predictor	Bookings made >100 days in advance have the highest cancellation probability. Early confirmation reminders or deposit incentives could reduce cancellations.
+Transient guests and online travel agency (OTA) bookings	These segments show 2–3x higher cancellation odds compared to group or contract bookings. Targeted deposit rules or prepayment can mitigate risk.
+Non Refund deposits show extreme skew (~99% cancellation)	Indicates a potential data artifact or business rule; immediate data audit is necessary to correct reporting and prevent model bias.
+
+Additional Operational Insights
+•	Overbooking strategies should differ by hotel type: higher buffer for City Hotels, moderate for Resorts.
+•	ADR variability is higher in City Hotels, reflecting business traveler behavior and flexible pricing opportunities.
+•	Early-bird bookings with refundable deposits represent the highest risk class—these should be actively monitored.
+•	Special requests and prior booking history can be used to create a risk-scoring system for proactive management.
+
+
+8. Recommendations
+•	High-Risk Booking Management: Flag bookings with long lead times or prior cancellations; use reminders or incentives to convert to non-refundable deposits.
+•	Hotel Type Strategy: Maintain higher ADR at City Hotels, but implement stricter deposits or shorter free cancellation windows to reduce risk.
+•	Customer Engagement: Encourage early special requests and reward repeat guests through loyalty programs to lower cancellation likelihood.
+•	Deposit Policy Optimization: Introduce partial or tiered deposits for early bookings to discourage speculative reservations.
+•	Target High-Risk Segments: Focus on transient travelers and OTA bookings with prepayment or personalized communication.
+•	Operational Monitoring: Use dashboards to track lead time, deposit type, ADR, customer type, and engagement metrics for proactive interventions.
+•	Data Integrity: Audit Non Refund deposit data to ensure model accuracy and reliable decision-making.
+
+
+9. Conclusion 
+The analysis of over 113,000 hotel bookings demonstrates that cancellation behavior is strongly influenced by deposit type, lead time, hotel category, customer type, and engagement metrics.
+Key Takeaways:
+1.	Deposit Type is the most powerful categorical predictor; Non Refund data needs immediate review.
+2.	Lead Time drives early cancellation risk—long-horizon bookings (>100 days) are most vulnerable.
+3.	Hotel Type differentiates risk profiles: City Hotels have higher cancellation rates and price variability; Resort Hotels show more stability.
+4.	Customer Segments: Transient and OTA guests are high-risk; repeat and engaged guests are protective.
+5.	Price Influence: Higher ADR bookings show slightly increased cancellation propensity; pricing strategies should balance revenue and risk.
+6.	Engagement Signals: Special requests and prior booking history are strong protective factors; operational focus on engagement can improve retention.
+Operational Recommendations:
+•	Implement risk-based overbooking strategies according to hotel type and booking profile.
+•	Optimize deposit policies with partial/tiered deposits for early bookings.
+•	Use engagement-driven interventions (special requests, reminders, loyalty perks) to reduce cancellations.
+•	Establish a real-time monitoring dashboard for predictive cancellation risk, enabling proactive operational decisions.
+Strategic Impact:
+•	The Logistic Regression model (AUC ≈ 0.83) is robust, generalizes well to unseen bookings, and allows hotels to forecast cancellations with high confidence.
+•	Effective implementation of these strategies can enhance revenue protection, optimize operational efficiency, and reduce uncertainty in room inventory management.
+•	Immediate data audit for Non Refund deposits is critical for maintaining predictive accuracy and operational reliability.
