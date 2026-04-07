@@ -38,9 +38,9 @@ hotel-booking-cancellation-analysis/
 ├── data/
 │   └── hotel_bookings.csv
 ├── scripts/
-│   └── Project-HotelBooking-2.R
+│   └── Project-HotelBooking.R
 ├── reports/
-│   └── Group-3-Report.docx
+│   └── Report
 └── figures/
     ├── Specificity vs Sensitivity.jpg
     ├── Residuals vs Fitted and Q-Q plots.jpg
