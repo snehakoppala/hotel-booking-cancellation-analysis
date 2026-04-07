@@ -42,10 +42,10 @@ hotel-booking-cancellation-analysis/
 ├── reports/
 │   └── Group-3-Report.docx
 └── figures/
-    ├── roc-train.jpg
-    ├── roc-test.jpg
+    ├── Specificity vs Sensitivity.jpg
+    ├── Residuals vs Fitted and Q-Q plots.jpg
     ├── adr-by-hotel-type.jpg
-    ├── adr-by-deposit-type.jpg
+    ├── adr-by-cancellation.jpg
     ├── leadtime-by-cancellation.jpg
     ├── totalstay-by-cancellation.jpg
     ├── cancellation-rate-by-hotel-type.jpg
@@ -146,7 +146,7 @@ The model generalizes well (train and test AUC nearly identical) and behaves as 
 ## 7. How to Run the Analysis
 
 1. Clone this repository or download the files.
-2. Open `scripts/Project-HotelBooking-2.R` in RStudio or Posit Cloud.
+2. Open `scripts/Project-HotelBooking.R` in RStudio or Posit Cloud.
 3. Set the working directory to the repository root.
 4. Install required packages if not already installed:
 
@@ -169,4 +169,4 @@ install.packages(c("dplyr", "ggplot2", "car", "broom", "caret", "pROC"))
 
 ## 9. Authors
 
-Group 3 - Hotel Booking Cancellation Analysis Project
+Sneha K S
